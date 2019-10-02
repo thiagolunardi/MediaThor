@@ -1,6 +1,5 @@
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -12,14 +11,12 @@ namespace MediaThor
     public class MediaThor : IMediator, ICommandsCounter
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly ILogger _logger;
         private static ConcurrentBag<Task> _taskRunners;
         private readonly static object _taskLock = new object();
 
-        public MediaThor(IServiceProvider serviceProvider, ILogger<MediaThor> logger)
+        public MediaThor(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
-            _logger = logger;
 
             RenewTaskRunnerBag();
         }
@@ -35,27 +32,16 @@ namespace MediaThor
 
             var taskRunner = Task.Run(async () =>
             {
-                try
+                using (var scope = _serviceProvider.CreateScope())
                 {
-                    _logger.LogInformation("Handling {@message}", request);
+                    var serviceFactory = scope.ServiceProvider.GetService<ServiceFactory>();
 
-                    using (var scope = _serviceProvider.CreateScope())
-                    {
-                        var serviceFactory = scope.ServiceProvider.GetService<ServiceFactory>();
+                    var handler = (RequestHandlerWrapper<TResponse>)Activator
+                        .CreateInstance(typeof(RequestHandlerWrapperImpl<,>).MakeGenericType(requestType, typeof(TResponse)));
 
-                        var handler = (RequestHandlerWrapper<TResponse>)Activator
-                            .CreateInstance(typeof(RequestHandlerWrapperImpl<,>).MakeGenericType(requestType, typeof(TResponse)));
+                    var response = await handler.Handle(request, cancellationToken, serviceFactory);
 
-                        var response = await handler.Handle(request, cancellationToken, serviceFactory);
-
-                        _logger.LogInformation("Message finished {@message} {@result}", request, response);
-                        return response;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Error handling {@message}", request);
-                    throw;
+                    return response;
                 }
             });
 
@@ -98,26 +84,14 @@ namespace MediaThor
 
             var taskRunner = Task.Run(async () =>
             {
-                try
+                using (var scope = _serviceProvider.CreateScope())
                 {
-                    _logger.LogInformation("Handling {@message}", notification);
+                    var serviceFactory = scope.ServiceProvider.GetService<ServiceFactory>();
 
-                    using (var scope = _serviceProvider.CreateScope())
-                    {
-                        var serviceFactory = scope.ServiceProvider.GetService<ServiceFactory>();
+                    var handler = (NotificationHandlerWrapper)Activator
+                        .CreateInstance(typeof(NotificationHandlerWrapperImpl<>).MakeGenericType(notificationType));
 
-                        var handler = (NotificationHandlerWrapper)Activator
-                            .CreateInstance(typeof(NotificationHandlerWrapperImpl<>).MakeGenericType(notificationType));
-
-                        await handler.Handle(notification, cancellationToken, serviceFactory, PublishCore);
-
-                        _logger.LogInformation("Message finished {@message}", notification);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Error handling {@message}", notification);
-                    throw;
+                    await handler.Handle(notification, cancellationToken, serviceFactory, PublishCore);
                 }
             });
 
@@ -141,8 +115,6 @@ namespace MediaThor
 
         private void RenewTaskRunnerBag()
         {
-            _logger.LogInformation($"Renewing task runner bag. Tasks to be wiped: {CountCommands()}");
-
             var newBag = new ConcurrentBag<Task>();
             Interlocked.Exchange(ref _taskRunners, newBag);
         }
@@ -154,7 +126,6 @@ namespace MediaThor
                 CompletedTaskCollector();
                 _taskRunners.Add(taskRunner);
             }
-            _logger.LogInformation($"MediaThor task queue size {CountCommands()}");
         }
 
         private void CompletedTaskCollector()

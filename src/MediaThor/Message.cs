@@ -6,9 +6,8 @@ namespace MediaThor
 {
     public abstract class Message
     {
-        public Guid _Id { get; private set; }
-        public DateTime Timestamp { get; private set; }
-        public string CorrelationId { get; private set; }
+        public Guid MessageId { get; }
+        public DateTime Timestamp { get; }
 
         protected abstract ValidationResult Validate();
 
@@ -34,14 +33,8 @@ namespace MediaThor
 
         protected Message()  
         {
-            _Id = Guid.NewGuid();
-            Timestamp = DateTime.UtcNow;
-            CorrelationId = string.Empty;
-        }
-
-        internal virtual void SetCorrelationId(string correlationId)
-        {
-            CorrelationId = correlationId;
+            MessageId = Guid.NewGuid();
+            Timestamp = DateTime.UtcNow;;
         }
     } 
 }

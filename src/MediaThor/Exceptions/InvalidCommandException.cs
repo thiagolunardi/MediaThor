@@ -4,9 +4,9 @@ namespace MediaThor
 {
     public class InvalidCommandException : Exception
     {
-        public Message Command { get; protected set; }
+        public Command Command { get; }
 
-        public InvalidCommandException(Exception ex, Message cmd)
+        public InvalidCommandException(Exception ex, Command cmd)
             : base("Invalid command", ex)
         {
             Command = cmd;

@@ -6,7 +6,7 @@ namespace MediaThor
     {        
     }
 
-    public abstract class Command<TResponse> : Message, IRequest<TResponse>
+    public abstract class Command<TResponse> : Command, IRequest<TResponse>
     {
     }
 }
