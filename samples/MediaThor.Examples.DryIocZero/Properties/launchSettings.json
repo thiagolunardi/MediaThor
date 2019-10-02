@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "MediaThor.Examples.DryIocZero": {
+      "commandName": "Project"
+    }
+  }
+}

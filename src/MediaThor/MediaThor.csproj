@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <Description>Simple, unambitious mediator implementation in .NET</Description>
+        <Copyright>Copyright Thiago Lunardi</Copyright>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <AssemblyName>MediaThor</AssemblyName>
+        <PackageId>MediaThor</PackageId>
+        <PackageTags>mediathor;mediator;request;response;queries;commands;events;notifications;cqrs</PackageTags>
+        <PackageIconUrl>https://raw.githubusercontent.com/ThiagoLunardi/MediaThor/master/assets/logo/mediathor-128x128.png</PackageIconUrl>
+        <PackageProjectUrl>https://github.com/ThiagoLunardi/MediaThor</PackageProjectUrl>
+        <PackageLicenseUrl>https://github.com/ThiagoLunardi/MediaThor/blob/master/LICENSE</PackageLicenseUrl>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <RepositoryUrl>git://github.com/ThiagoLunardi/MediaThor</RepositoryUrl>
+        <EmbedUntrackedSources>false</EmbedUntrackedSources>
+        <LangVersion>7.3</LangVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-63127-02" PrivateAssets="All" />
+        <PackageReference Include="Mediatr" Version="5.1.*" PrivateAssets="All" />
+        <PackageReference Include="FluentValidation " Version="8.0.*" PrivateAssets="All" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.*" PrivateAssets="All" />
+        <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.1.*" PrivateAssets="All" />
+    </ItemGroup>
+</Project>

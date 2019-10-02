@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <AssemblyName>MediaThor.Examples.Autofac</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <PackageId>MediaThor.Examples.Autofac</PackageId>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MediaThor.Examples\MediaThor.Examples.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac" Version="4.8.1" />
+  </ItemGroup>
+
+</Project>
