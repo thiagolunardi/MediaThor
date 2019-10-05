@@ -12,12 +12,10 @@ namespace MediaThor.Tests
     public class MessageBusTests
     {
         private readonly MessageBusFixture _fixture;
-        private readonly ITestOutputHelper _output;
 
-        public MessageBusTests(MessageBusFixture fixture, ITestOutputHelper output)
+        public MessageBusTests(MessageBusFixture fixture)
         {
             _fixture = fixture;
-            _output = output;
         }
 
         [Fact]
@@ -52,7 +50,7 @@ namespace MediaThor.Tests
         public async Task Should_handler_should_return_value()
         {
             // arrange
-            var bus = _fixture.CreateMessageBusInstance(out StringBuilder builder);
+            var bus = _fixture.CreateMessageBusInstance(out _);
 
             // act
             var datetimeNow = await bus.ExecuteCommand(new AskTheTimeCommand());

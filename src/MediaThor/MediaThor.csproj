@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <Description>Simple, unambitious mediator implementation in .NET</Description>
         <Copyright>Copyright Thiago Lunardi</Copyright>

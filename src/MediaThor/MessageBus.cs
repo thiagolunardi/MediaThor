@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using MediatR;
 
@@ -7,7 +6,6 @@ namespace MediaThor
     public class MessageBus : IMessageBus
     {
         private readonly IMediator _mediator;
-        private readonly string _requestId;
 
         public MessageBus(
             IMediator mediator)

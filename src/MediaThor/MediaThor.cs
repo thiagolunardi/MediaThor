@@ -1,10 +1,10 @@
-using MediatR;
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace MediaThor
 {
@@ -17,38 +17,37 @@ namespace MediaThor
         public MediaThor(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
-
+            
             RenewTaskRunnerBag();
         }
 
         public virtual Task<TResponse> Send<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
         {
-            if (request == null)
-            {
+            if (request is null)
                 throw new ArgumentNullException(nameof(request));
-            }
 
             var requestType = request.GetType();
 
-            var taskRunner = Task.Run(async () =>
-            {
-                using (var scope = _serviceProvider.CreateScope())
-                {
-                    var serviceFactory = scope.ServiceProvider.GetService<ServiceFactory>();
-
-                    var handler = (RequestHandlerWrapper<TResponse>)Activator
-                        .CreateInstance(typeof(RequestHandlerWrapperImpl<,>).MakeGenericType(requestType, typeof(TResponse)));
-
-                    var response = await handler.Handle(request, cancellationToken, serviceFactory);
-
-                    return response;
-                }
-            });
+            var taskRunner = RunAsync(request, requestType, cancellationToken);
 
             AddTaskRunner(taskRunner);
 
             return taskRunner;
         }
+
+        private async Task<TResponse> RunAsync<TResponse>(IRequest<TResponse> request, Type requestType, CancellationToken cancellationToken)
+        {
+            using var scope = _serviceProvider.CreateScope();
+
+            var serviceFactory = scope.ServiceProvider.GetService<ServiceFactory>();
+
+            var handler = (RequestHandlerWrapper<TResponse>)Activator
+                .CreateInstance(typeof(RequestHandlerWrapperImpl<,>).MakeGenericType(requestType, typeof(TResponse)));
+
+            var response = await handler.Handle(request, cancellationToken, serviceFactory);
+
+            return response;
+        }        
 
         public virtual Task Publish<TNotification>(TNotification notification, CancellationToken cancellationToken = default)
             where TNotification : INotification
@@ -82,22 +81,24 @@ namespace MediaThor
         {
             var notificationType = notification.GetType();
 
-            var taskRunner = Task.Run(async () =>
-            {
-                using (var scope = _serviceProvider.CreateScope())
-                {
-                    var serviceFactory = scope.ServiceProvider.GetService<ServiceFactory>();
-
-                    var handler = (NotificationHandlerWrapper)Activator
-                        .CreateInstance(typeof(NotificationHandlerWrapperImpl<>).MakeGenericType(notificationType));
-
-                    await handler.Handle(notification, cancellationToken, serviceFactory, PublishCore);
-                }
-            });
+            var taskRunner = RunAsync(notification, notificationType, cancellationToken);            
 
             AddTaskRunner(taskRunner);
 
             return taskRunner;
+        }
+
+        private async Task RunAsync(INotification notification, Type notificationType, CancellationToken cancellationToken)
+        {
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var serviceFactory = scope.ServiceProvider.GetService<ServiceFactory>();
+
+                var handler = (NotificationHandlerWrapper)Activator
+                    .CreateInstance(typeof(NotificationHandlerWrapperImpl<>).MakeGenericType(notificationType));
+
+                await handler.Handle(notification, cancellationToken, serviceFactory, PublishCore);
+            }
         }
 
         /// <summary>
