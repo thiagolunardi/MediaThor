@@ -28,12 +28,12 @@ steps:
   inputs:
     command: 'build'
     arguments: '--configuration $(buildConfiguration)'
+
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test'
   inputs:
     command: 'test'
     projects: './test/**/*.csproj'
-    testRunTitle: 'MediaThor Tests'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet pack'
