@@ -36,6 +36,7 @@ steps:
     testRunTitle: 'MediaThor Tests'
 
 - task: DotNetCoreCLI@2
+  displayName: 'dotnet pack'
   inputs:
     command: 'pack'
     packagesToPack: './src/**/*.csproj'
