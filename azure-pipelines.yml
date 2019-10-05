@@ -40,6 +40,7 @@ steps:
   displayName: 'Pack'
   inputs:
     command: 'pack'
-    packagesToPack: './src/**/*.csproj'
+    packagesToPack: '**/*.csproj'
     nobuild: true
     versioningScheme: 'off'
+    verbosityPack: 'Minimal'
