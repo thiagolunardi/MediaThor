@@ -14,15 +14,30 @@ variables:
 
 steps:
 - task: UseDotNet@2
-  displayName: 'Use dotnet sdk 3.x'
+  displayName: 'Use .NET Core 3.x'
   inputs:
     version: 3.x
 
 - task: DotNetCoreCLI@2
+  displayName: 'dotnet restore'
   inputs:
     command: 'restore'
 
 - task: DotNetCoreCLI@2
+  displayName: 'dotnet build'
   inputs:
     command: 'build'
     arguments: '--configuration $(buildConfiguration)'
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet test'
+  inputs:
+    command: 'test'
+    projects: './test/**/*.csproj'
+    testRunTitle: 'MediaThor Tests'
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'pack'
+    packagesToPack: './src/**/*.csproj'
+    nobuild: true
+    versioningScheme: 'off'
