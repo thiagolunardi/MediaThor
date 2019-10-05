@@ -22,6 +22,7 @@ steps:
   displayName: 'dotnet restore'
   inputs:
     command: 'restore'
+    verbosityRestore: 'Minimal'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet build'
@@ -34,7 +35,6 @@ steps:
   inputs:
     command: 'test'
     arguments: '--no-build'
-    projects: './test/**/*.csproj'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet pack'
