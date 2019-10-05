@@ -34,7 +34,7 @@ steps:
   displayName: 'dotnet test'
   inputs:
     command: 'test'
-    arguments: '--no-build'
+    arguments: '--configuration $(buildConfiguration) --no-build'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet pack'
